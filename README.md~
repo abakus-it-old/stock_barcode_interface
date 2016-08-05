@@ -1,5 +1,6 @@
-#Stock barcode interface
-This module is based on the interface extension (odoo 8) of the warehouse module.
+#Stock interface improvements
+
+This module is based on the interface extension of the warehouse module.
     
 New delivery note report (under construction)
     
@@ -16,7 +17,7 @@ New menu items:
 - Suppliers: picking lists by supplier (with search)
 - Customers: picking lists by customer (with search)
     
-Improvements to existing functionalities:
+Improvements to existing functionalities:   
 - new information to the stock picking interface:
     - picking:
         - Partner

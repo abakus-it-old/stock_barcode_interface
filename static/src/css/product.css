@@ -1,0 +1,126 @@
+﻿.oe_product {
+    cursor: pointer;
+}
+.js_print_label{
+    cursor: pointer;
+}
+
+/* CSS for Progress Bar. Source: http://jsfiddle.net/waspinator/fwN7P/11/ */
+.quantity_ok{
+border-radius: 10px;
+border: 5px solid green;
+padding: 5px 20px;
+font-weight: bold;
+width: 150px;
+text-align: center;
+color: green;
+}
+
+.quantity_tolerance{
+border-radius: 10px;
+border: 5px solid green;
+padding: 5px 20px;
+font-weight: bold;
+width: 150px;
+text-align: center;
+color: orange;
+}
+
+.quantity_nok{
+border-radius: 10px;
+border: 5px solid red;
+padding: 5px 20px;
+font-weight: bold;
+width: 150px;
+text-align: center;
+color: red;
+}
+
+.progressbar a, .progressbar a:hover{
+    text-decoration: none;
+    color: black;
+}
+
+.progressbar {
+    background:#ddd;
+    border:0;
+    font-weight:bold;
+    cursor:pointer;
+    position:relative;
+    padding:0px 50px 0px 15px;
+    width: 300px;
+    height: 60px;
+    font-size: 20px;
+    vertical-align: top;
+
+}
+
+/*
+.progressbar:hover {
+    background: gray;
+}
+
+.progressbar:hover:before {
+    border-top:30px gray solid;
+    border-bottom:30px gray solid;
+}
+
+.progressbar:hover:after{
+    border-left:15px gray solid;
+}
+*/
+
+#currentprogressbar {
+    background: orange;
+}
+
+#currentprogressbar:before
+{
+    border-top:30px orange solid;
+    border-bottom:30px orange solid;
+}
+
+#currentprogressbar:after
+{
+    border-left: 15px solid orange;
+}
+
+
+#currentprogressbar .element a {
+    color: #FFFFFF;
+}
+
+
+.progressbar:before {
+    content:'';
+    border-top:30px #ddd solid;
+    border-bottom:30px #ddd solid;
+    border-left:15px #fff solid;
+    position:absolute;
+    top:0;
+    left:0;
+}
+.progressbar:after {
+    content:'';
+    border-top:30px #fff solid;
+    border-bottom:30px #fff solid;
+    border-left:15px #ddd solid;
+    position:absolute;
+    top:0;
+    right:0;
+}
+.progressbar i:after {
+    content:'\2713';
+    width:25px;
+    color: white;
+    height:25px;
+    font-size: 20px;
+    background: green;
+    border-radius: 25px;
+    line-height: 25px;
+    position:absolute;
+    top:0;
+    bottom:0;
+    margin:auto;
+    right:20px;
+}

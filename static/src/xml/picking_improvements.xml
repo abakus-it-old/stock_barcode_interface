@@ -1,0 +1,1014 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name='PickingEditorNewWidget'>
+
+        <div class="modal fade" id="js_LocationChooseModal" tabindex="-1" role="dialog" aria-labelledby="LocationChooseModal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                        <h4 class="modal-title" id="myModalLabel">Choose a location</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Scan a location or select it in the list below</p>
+                        <select id="js_loc_select" class="form-control">
+                            <option class="js_loc_option" data-loc-id="false"></option>
+                            <t t-foreach="widget.get_location()" t-as="loc">
+                                <option class="js_loc_option" t-att-data-loc-id="loc.id"><t t-esc="loc.name"/></option>
+                            </t>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary js_validate_location">Change Location</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade" id="js_LotChooseModal" tabindex="-1" role="dialog" aria-labelledby="LotChooseModal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                        <h4 class="modal-title" id="myModalLabel">Create Lot</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Scan a lot or type it below (leave empty to generate one automatically)</p>
+                        <input class='col-xs-6 js_lot_scan' type='text'/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary js_validate_lot">Create Lot</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="js_PackConfModal" tabindex="-1" role="dialog" aria-labelledby="PackConfModal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                        <h4 class="modal-title" id="myModalLabel">Configure package</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Package type</p>
+                        <select id="js_packconf_select" class="form-control">
+                            <option class="js_packing_option" data-ul-id="false"></option>
+                            <t t-foreach="widget.get_logisticunit()" t-as="ul">
+                                <option class="js_packing_option" t-att-data-ul-id="ul.id" t-att-value="ul.id"><t t-esc="ul.name"/></option>
+                            </t>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary js_validate_pack">Validate package</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div>
+                <div class="col-sm-4 col-xs-4">
+                    <h2 class="oe_pick_app_header"/>
+                </div>
+                <div class="col-sm-8 col-xs⁻8 text-right">
+                    <button type="button" class='btn btn-default js_pick_done'>Create backorder</button>
+                    <button type="button" class='btn btn-default js_pick_print'>Print Document</button>
+                    <button type="button" class='btn btn-default js_pick_print_two_times'>Print 2X</button>
+                    <button type="button" class='btn btn-default js_pick_print_labels'>Print Labels</button>
+                    <button type="button" class='btn btn-default js_pick_print_all'>Print (labels + 2X)</button>
+                </div>
+            </div>
+            <div>
+                <table class="table table-condensed">
+                    <tr>
+                        <th>Partner</th>
+                        <t t-foreach="widget.get_header_info()" t-as="info">
+                            <th><t t-esc="info.key"/></th>
+                        </t>
+                    </tr>
+                    <tr>
+                        <td style="font-size: 18px;font-weight: bold;">
+                            <t t-set="picking" t-value="widget.get_picking()"/>
+                            <t t-if="picking.partner.parent_id"><span t-esc="picking.partner.parent_id[1]"/>: </t><t t-esc="picking.partner.name" />
+                            <br/> <small><t t-esc="picking.partner.street" /> - <t t-esc="picking.partner.zip" /> <t t-esc="picking.partner.city" />, <t t-esc="picking.partner.phone"/></small>
+                        </td>
+                        <t t-foreach="widget.get_header_info()" t-as="info">
+                            <td t-att-style="info.css"><t t-esc="info.value"/></td>
+                        </t>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="row">
+            <div>
+                <div class="col-md-3 col-sm-4 col-xs-6">
+                    <h3><strong>
+                        <select id="js_select" class="form-control">
+                            <option value="ToDo" id="js_select_todo">Operations ToDo</option>
+                            <option value="Processed" id="js_select_processed">Operations Processed</option>
+                        </select>
+                    </strong>
+                    </h3>
+                </div>
+                <div class="col-md-3 col-sm-4 col-xs-6">
+                    <h2>
+                        <div class="input-group">
+                            <input type="text" class="form-control oe_searchbox" placeholder="Filter by location..."/>
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger js_clear_search" type="button">x</button>
+                            </span>
+                        </div>
+                    </h2>
+                </div>
+                <div class="col-md-6 col-sm-4 col-xs-12 text-right">
+                    <h3>
+                        <button type="button" class='btn btn-default js_pick_pack js_putinpack'> Put in Pack </button>
+                        <button type="button" class='btn btn-danger js_drop_down fa fa-download'> Put in Cart </button>
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <table class='table table-condensed js_op_table_todo'>
+                <thead>
+                    <tr>
+
+                        <th class="text-left" width="50%">Product</th>
+                        <th class='text-center' width="150">Scanned</th>
+                        <th class='text-center'>Todo</th>
+                        <th>Availability</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <t t-foreach="widget.get_rows()" t-as="row">
+
+                        <tr t-att-class="row.classes + 'js_pack_op_line'" t-att-data-id="row.cols.id" t-att-data-container-id="row.cols.container_id" t-att-data-package-id="row.cols.package_id" t-att-data-ulid="row.cols.ul_id">
+                            <td t-att-class="'brctbl-col1 text-left' + row.cols.head_container ? ' js_unfold' : ''">
+                                <t t-if="!row.cols.head_container &amp;&amp; row.cols.container"><span class="fa fa-level-up fa-rotate-90" style="margin-left:10px;margin-right:10px;"></span></t>
+                                <t t-esc="row.cols.product" />
+                            </td>
+                            <td class='brctbl-col2 text-center js_row_qty'>
+                                <t t-if="!row.cols.processed &amp;&amp; !row.cols.container">
+                                    <div class="input-group">
+                                        <span class="input-group-addon js_minus input-sm" t-att-data-product-id='row.cols.product_id'><a href="#"><i class="fa fa-minus"></i></a></span>
+                                        <form class="js_submit_value">
+                                            <input type="text" class="form-control text-center js_qty" t-att-value="row.cols.rem"></input>
+
+                                        </form>
+                                        <span class="input-group-addon js_plus input-sm" t-att-data-product-id='row.cols.product_id'><a href="#"><i class="fa fa-plus"></i></a></span>
+                                    </div>
+                                </t>
+                                <t t-if="(row.cols.processed == 'true' || row.cols.container)">
+                                    <t t-esc="row.cols.rem" />
+                                </t>
+                            </td>
+                            <td class="brctbl-col3 text-center">
+                                <t t-esc="row.cols.qty"/> <t t-esc="row.cols.uom" />
+                            </td>
+
+                            <td class="brctbl-col4 js_availability">
+                                <t t-esc="row.cols.availability" />
+                            </td>
+                            <td class="brctbl-col5 js_status">
+                                <t t-esc="row.cols.state" />
+                            </td>
+                            <td class="brctbl-col6">
+                                <span class="fa fa-print fa-2x js_print_label" t-att-data-id="row.cols.id" ></span>
+                            </td>
+                        </tr>
+
+                    </t>
+                </tbody>
+            </table>
+
+        </div>
+    </t>
+
+    <t t-name="PickingSearchNewResults">
+        <div class="panel-heading">
+            <h3 class="panel-title">Search Results</h3>
+        </div>
+        <div class="panel-body">
+            <t t-if="results.length === 0">
+                <strong>No picking found.</strong>
+            </t>
+            <t t-if="results.length > 0">
+                <t t-foreach="results" t-as="picking">
+                    <div class="col-lg-3 col-md-4">
+                        <div class="panel panel-default oe_picking" t-att-data-id="picking.id">
+                            <div class="panel-body">
+                                <strong class='oe_picking_name'><t t-esc="picking.name" /></strong>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </t>
+
+    <t t-name="PickingMenuNewWidget">
+        <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header navbar-form navbar-left" style="width: 1170px;">
+                    <input type='text' class="oe_searchbox form-control" placeholder='Search'/>
+                    <button type="button" class="btn btn-primary navbar-btn js_pick_incoming_product">Incoming Product</button>
+                    <button type="button" class="btn btn-primary navbar-btn js_pick_collect_and_go">CollectAndGo</button>
+                    <!-- <button type="button" class="btn btn-primary navbar-btn js_pick_menu">Menu</button> -->
+                    <button type="button" class="btn btn-primary navbar-btn js_pick_incomings">Incomings</button>
+                    <button type="button" class="btn btn-primary navbar-btn js_pick_outgoings">Outgoings</button>
+                    <button type="button" class="btn btn-primary navbar-btn js_pick_products">All Products</button>
+                    <button type="button" class="btn btn-primary navbar-btn js_pick_moves_products">Moves Products</button>
+                    <button type="button" class="btn btn-primary navbar-btn js_pick_customers">Customers</button>
+                    <button type="button" class="btn btn-primary navbar-btn js_pick_suppliers">Suppliers</button>
+                    <button type="button" class="btn btn-danger navbar-btn js_pick_quit">Quit</button>
+                </div>
+                <div class="navbar-header navbar-form navbar-right">
+                    <!--<button type="button" class="btn btn-danger js_pick_quit pull-right">Quit</button>-->
+                </div>
+
+            </div>
+        </div>
+        <div class="container">
+
+            <h1 class="js_title_label">Select your operation</h1>
+            <div class='js_picking_not_found alert alert-warning hidden'>
+                Scanned picking could not be found
+            </div>
+
+            <div class='js_picking_search_results panel panel-info hidden'>
+            </div>
+
+            <div class="row js_picking_categories">
+                <t t-foreach="widget.picking_types" t-as="type">
+                    <div class="col-lg-3 col-md-4">
+                        <div t-att-class="'oe_kanban oe_picking oe_kanban_color_' + type.color + ' ' + (widget.pickings_by_type[type.id].length === 0 ? 'oe_empty':'js_pick_last') "
+                                         t-att-data-id="type.id">
+                            <t t-if="type.code == 'incoming'" ><span class="fa fa-sign-in fa-2x"></span></t>
+                            <t t-if="type.code == 'outgoing'" ><span class="fa fa-truck fa-2x fa-flip-horizontal"></span></t>
+                            <t t-if="type.code == 'internal'" ><span class="fa fa-retweet fa-2x"></span></t>
+                            <strong><span><t t-esc="type.complete_name"/></span></strong>
+                            <div><t t-if="widget.pickings_by_type[type.id].length > 0">
+                                <span class='badge'><t t-esc="widget.pickings_by_type[type.id].length" /> picking(s) </span>
+                            </t></div>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="PickingProductsWidget">
+        <div class="container">
+
+            <h1 class="js_title_label">Products</h1>
+            <div class='js_picking_not_found alert alert-warning hidden'>
+                Scanned product could not be found
+            </div>
+
+            <div class="row">
+                <table class='table table-striped'>
+                    <thead>
+                        <tr>
+                            <th class="text-left" width="25%">Brand</th>
+                            <th class="text-left" width="25%">Name</th>
+                            <th class="text-left" width="25%">Internal Reference</th>
+                            <th class="text-left" width="25%">EAN13 Barcode</th>
+                        </tr>
+                    </thead>
+                    <tbody class='js_products_table_todo'>
+                        <t t-if="products.length === 0">
+                            <tr>
+                                <td id="products_result_status" colspan="4">
+                                    No product found.
+                                </td>
+                            </tr>
+                        </t>
+                        <t t-if="products.length > 0">
+                            <t t-foreach="products" t-as="product">
+                                <tr t-att-data-id="product.id" class="oe_product">
+                                    <td t-att-class="'brctbl-col1 text-left'">
+                                        <t t-esc="product.brand" />
+                                    </td>
+                                    <td t-att-class="'brctbl-col2 text-left'">
+                                        <t t-esc="product.name" />
+                                    </td>
+                                    <td t-att-class="'brctbl-col3 text-left'">
+                                        <t t-esc="product.default_code" />
+                                    </td>
+                                    <td t-att-class="'brctbl-col4 text-left'">
+                                        <t t-esc="product.barcode" />
+                                    </td>
+                                </tr>
+                            </t>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="PartnerListWidget">
+        <div class="container">
+
+            <h1 class="js_title_label text-capitalize"><t t-esc="type"/></h1>
+            <div class="row">
+                <table class='table table-striped'>
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="font-size: 18px;">Name</th>
+                            <th class="text-center" style="font-size: 18px;">Address</th>
+                            <th class="text-center" style="font-size: 18px;">Phone</th>
+                        </tr>
+                    </thead>
+                    <tbody class='js_products_table_todo'>
+                        <t t-if="partners.length === 0">
+                            <tr>
+                                <td id="products_result_status" colspan="4">
+                                    No partner found.
+                                </td>
+                            </tr>
+                        </t>
+                        <t t-if="partners.length > 0">
+                            <t t-foreach="partners" t-as="partner">
+                                <tr t-att-data-id="partner.id" class="oe_product">
+                                    <td t-att-class="'brctbl-col1 text-left text-uppercase'">
+                                        <t t-if="partner.parent_id"><span t-esc="partner.parent_id[1]"/>: </t><t t-esc="partner.name" />
+                                    </td>
+                                    <td t-att-class="'brctbl-col12 text-left'">
+                                        <t t-esc="partner.street" /> - <t t-esc="partner.zip" /> <t t-esc="partner.city" />
+                                    </td>
+                                    <td t-att-class="'brctbl-col3 text-left'">
+                                        <t t-esc="partner.phone"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="PartnerMovesWidget">
+        <div class="container">
+            <h1><t t-esc="partner.name" /> <br/> <small><t t-esc="partner.street" /> - <t t-esc="partner.zip" /> <t t-esc="partner.city" />, <t t-esc="partner.phone"/></small></h1>
+            <h3>Moves</h3>
+            <div class="row">
+                <table class='table table-striped'>
+                    <thead>
+                        <tr>
+                            <th class="text-left">Product</th>
+                            <th class="text-left">Quantity</th>
+                            <th class="text-left">Picking name</th>
+                            <th class="text-left">Picking state</th>
+                            <th class="text-left">Move status</th>
+                        </tr>
+                    </thead>
+                    <tbody class='js_products_table_todo'>
+                        <t t-if="stock_moves.length === 0">
+                            <tr>
+                                <td id="products_result_status" colspan="4">
+                                    No moves found.
+                                </td>
+                            </tr>
+                        </t>
+                        <t t-if="stock_moves.length > 0">
+                            <t t-foreach="stock_moves" t-as="stock_move">
+                                <tr t-att-data-id="stock_move.picking_id.id" class="oe_picking">
+                                    <td t-att-class="'brctbl-col1 text-left'">
+                                        <t t-esc="stock_move.product_id[1]" />
+                                    </td>
+                                    <td t-att-class="'brctbl-col2 text-left'">
+                                        <t t-esc="stock_move.product_qty" /> <t t-esc="stock_move.product_uom[1]" />
+                                    </td>
+                                    <td t-att-class="'brctbl-col3 text-left'">
+                                        <t t-esc="stock_move.picking_id.name" />
+                                    </td>
+                                    <td t-att-class="'brctbl-col3 text-left'">
+                                        <t t-esc="stock_move.picking_id.state" />
+                                    </td>
+                                    <td t-att-class="'brctbl-col3 text-left'">
+                                        <t t-esc="stock_move.state" />
+                                    </td>
+                                </tr>
+                            </t>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="PickingListWidget">
+        <div class="container">
+
+            <h1 class="js_title_label"><t t-esc="type" /> Pickings</h1>
+            <div class='js_picking_not_found alert alert-warning hidden'>
+                Scanned picking could not be found
+            </div>
+
+            <div class="row">
+                <table class='table table-striped'>
+                    <thead>
+                        <tr>
+                            <th class="text-left">Partner</th>
+                            <th class="text-left">Name</th>
+                            <th class="text-left">Source Document</th>
+                            <th class="text-left">Creation Date</th>
+                            <th class="text-left">Scheduled Date</th>
+                            <th class="text-left">State</th>
+                        </tr>
+                    </thead>
+                    <tbody class='js_products_table_todo'>
+                        <t t-if="pickings.length === 0">
+                            <tr>
+                                <td id="products_result_status" colspan="4">
+                                    No picking found.
+                                </td>
+                            </tr>
+                        </t>
+                        <t t-if="pickings.length > 0">
+                            <t t-foreach="pickings" t-as="picking">
+                                <tr t-att-data-id="picking.id" class="oe_product">
+                                    <td t-att-class="'brctbl-col1 text-left'">
+                                        <t t-esc="picking.partner" />
+                                    </td>
+                                    <td t-att-class="'brctbl-col1 text-left'">
+                                        <t t-esc="picking.name" />
+                                    </td>
+                                    <td t-att-class="'brctbl-col1 text-left'">
+                                        <t t-esc="picking.origin" />
+                                    </td>
+                                    <td t-att-class="'brctbl-col2 text-left'">
+                                        <t t-esc="picking.date" />
+                                    </td>
+                                    <td t-att-class="'brctbl-col3 text-left'">
+                                        <t t-esc="picking.min_date" />
+                                    </td>
+                                    <td t-att-class="'brctbl-col4 text-left'">
+                                        <t t-esc="picking.state" />
+                                    </td>
+                                </tr>
+                            </t>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="PickingMainNewWidget">
+            <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+                <div class="container">
+                    <div class="navbar-left">
+                        <button type="button" class="btn btn-primary navbar-btn js_pick_incoming_product">Incoming Product</button>
+                        <button type="button" class="btn btn-primary navbar-btn js_pick_collect_and_go">CollectAndGo</button>
+                        <!-- <button type="button" class="btn btn-primary navbar-btn js_pick_menu">Menu</button> -->
+                        <button type="button" class="btn btn-primary navbar-btn js_pick_incomings">Incomings</button>
+                        <button type="button" class="btn btn-primary navbar-btn js_pick_outgoings">Outgoings</button>
+                        <button type="button" class="btn btn-primary navbar-btn js_pick_products">All Products</button>
+                        <button type="button" class="btn btn-primary navbar-btn js_pick_moves_products">Moves Products</button>
+                        <button type="button" class="btn btn-primary navbar-btn js_pick_customers">Customers</button>
+                        <button type="button" class="btn btn-primary navbar-btn js_pick_suppliers">Suppliers</button>
+                    </div>
+                    <div class="navbar-right">
+                        <button type="button" class="btn btn-default navbar-btn js_pick_prev">&lt; Previous</button>
+                        <button type="button" class="btn btn-default navbar-btn js_pick_next">Next &gt;</button>
+                        <button type="button" class="btn btn-danger navbar-btn js_pick_quit">Quit</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class='oe_placeholder_picking_editor'/>
+                <div class="text-right small oe_reload_op">
+                    The reserved stock changed. You might want to <button class="btn btn-default js_reload_op"> Recompute </button> the operations.
+                </div>
+            </div>
+    </t>
+
+<t t-name="PickingProductWidget">
+    <div class="container">
+        <h3>Product</h3>
+        <div>
+            <div style="float: left; width: 70%;">
+                 <table class='table table-condensed table-striped'>
+                    <tr>
+                        <th>Brand</th>
+                        <td><t t-esc="product.brand" /></td>
+                    </tr>
+                    <tr>
+                        <th>Name</th>
+                        <td><t t-esc="product.name" /></td>
+                    </tr>
+                    <tr>
+                        <th>EAN13 Barcode</th>
+                        <td><t t-esc="product.barcode" /></td>
+                    </tr>
+                    <tr>
+                        <th>Internal Reference</th>
+                        <td><t t-esc="product.default_code" /></td>
+                    </tr>
+                    <tr>
+                        <th>Quantity On Hand</th>
+                        <td><t t-if="product.qty_available"><t t-esc="product.qty_available"/></t><t t-if="! product.qty_available">0</t></td>
+                    </tr>
+                    <tr>
+                        <th>Internal Category</th>
+                        <td><t t-esc="product.category" /></td>
+                    </tr>
+                </table>
+            </div>
+            <div style="float: right; width: 30%;">
+                <t t-if="product.image_medium">
+                    <t t-set="image_medium" t-value="'&lt;img  src=&quot;data:image/gif;base64,'+ product.image_medium +'&quot;  /&gt;'"/>
+                    <t t-raw="image_medium"/>
+                </t>
+            </div>
+        </div>
+
+        <h3 style="clear: both;">Moves</h3>
+
+        <t t-if="pickings_per_types.length === 0">
+                    <tr>
+                        <td>
+                            No Move found.
+                        </td>
+                    </tr>
+        </t>
+        <t t-if="pickings_per_types.length > 0">
+            <t t-set="table_percent" t-value="100/pickings_per_types.length"/>
+            <t t-set="table_style" t-value="'width: '+table_percent+'%;'+' float: left;'"/>
+            <t t-foreach="pickings_per_types" t-as="type">
+                <table class='table table-condensed table-bordered' t-att-style="table_style">
+                    <thead>
+                            <tr>
+                            <th class="text-center" style="font-size:20px;" colspan="5"><t t-esc="type.name"/></th>
+                            </tr>
+                            <tr>
+                                <th class="text-left" width="20%">Picking Name</th>
+                                <th class="text-left" width="20%">Quantity</th>
+                                <th class="text-left" width="20%">Creation Date</th>
+                                <th class="text-left" width="20%">Partner</th>
+                                <th class="text-left" width="20%">State</th>
+                            </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="type.pickings" t-as="picking">
+
+                            <t t-set="tr_style" t-value=""/>
+                            <t t-if="picking.state=='Draft'">
+                                <!-- white -->
+                                <t t-set="tr_style" t-value="'background-color: white;'"/>
+                            </t>
+                            <t t-if="picking.state=='Cancelled'">
+                                <!-- red -->
+                                <t t-set="tr_style" t-value="'background-color: #FF9999;'"/>
+                            </t>
+                            <t t-if="picking.state=='Waiting Another Operation'">
+                                <!-- orange -->
+                                <t t-set="tr_style" t-value="'background-color: #FFCC66;'"/>
+                            </t>
+                            <t t-if="picking.state=='Partially Available'">
+                                <!-- orange -->
+                                <t t-set="tr_style" t-value="'background-color: #FFCC66;'"/>
+                            </t>
+                            <t t-if="picking.state=='Waiting Availability'">
+                                <!-- orange -->
+                                <t t-set="tr_style" t-value="'background-color: #FFCC66;'"/>
+                            </t>
+                            <t t-if="picking.state=='Ready to Transfer'">
+                                <!-- blue -->
+                                <t t-set="tr_style" t-value="'background-color: #CCFFFF;'"/>
+                            </t>
+                            <t t-if="picking.state=='Transferred'">
+                                <!-- green -->
+                                <t t-set="tr_style" t-value="'background-color: #99FF99;'"/>
+                            </t>
+
+                            <tr class="oe_picking" t-att-data-id="picking.id" t-att-style="tr_style">
+                                <td t-att-class="'brctbl-col1 text-left'">
+                                    <t t-set="icon_class" t-value=""/>
+                                    <t t-set="icon_style" t-value=""/>
+                                    <t t-if="type.name=='INCOMING'">
+                                        <t t-set="icon_class" t-value="'fa fa-truck'"/>
+                                    </t>
+                                    <t t-if="type.name=='OUTGOING'">
+                                        <t t-set="icon_class" t-value="'fa fa-truck'"/>
+                                    </t>
+                                    <t t-if="type.name=='INTERNAL'">
+                                        <t t-set="icon_class" t-value="'fa fa-retweet'"/>
+                                    </t>
+                                    <t t-if="icon_class!=''">
+                                        <t t-set="icon_style" t-value="'margin-right: 5px;'"/>
+                                    </t>
+                                    <span t-att-class="icon_class" t-att-style="icon_style"/><t t-esc="picking.name" />
+                                </td>
+                                <td t-att-class="'brctbl-col2 text-left'">
+                                    <t t-esc="picking.product_qty" />
+                                </td>
+                                <td t-att-class="'brctbl-col2 text-left'">
+                                    <t t-esc="picking.date" />
+                                </td>
+                                <td t-att-class="'brctbl-col3 text-left'">
+                                    <t t-esc="picking.partner" />
+                                </td>
+                                <td t-att-class="'brctbl-col4 text-left'">
+                                    <t t-esc="picking.state" />
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </t>
+        </t>
+    </div>
+</t>
+
+<t t-name="IncomingProductWidget">
+    <div class="container">
+        <button id="currentprogressbar" class="progressbar">
+            <a href="#">PRODUCT SCAN</a>
+        </button>
+        <button class="progressbar">
+            <a href="#">INPUT SELECTION</a>
+        </button>
+        <button class="progressbar">
+            <a href="#">OUTPUT SELECTION</a>
+        </button>
+
+        <t t-if="product != null">
+            <h3>Product</h3>
+            <div>
+                <div style="float: left; width: 70%;">
+                     <table class='table table-condensed table-striped'>
+                        <tr style="font-size: 20px;">
+                            <th>Brand</th>
+                            <td><t t-esc="product.brand" /></td>
+                        </tr>
+                        <tr style="font-size: 20px;">
+                            <th>Name</th>
+                            <td><t t-esc="product.name" /></td>
+                        </tr>
+                        <tr style="font-size: 20px;">
+                            <th>Quantity On Hand</th>
+                            <td><t t-if="product.qty_available"><t t-esc="product.qty_available"/></t><t t-if="! product.qty_available">0</t></td>
+                        </tr>
+                        <tr>
+                            <th>EAN13 Barcode</th>
+                            <td><span id="barcode-barcode"><t t-esc="product.barcode" /></span>   <button id="edit-barcode">Edit</button></td>
+                        </tr>
+                        <tr>
+                            <th>Internal Reference</th>
+                            <td><t t-esc="product.default_code" /></td>
+                        </tr>
+                        <tr>
+                            <th>Virtual Quantity Available</th>
+                            <td><t t-if="product.virtual_available"><t t-esc="product.virtual_available"/></t><t t-if="! product.virtual_available">0</t></td>
+                        </tr>
+                        <tr>
+                            <th>Internal Category</th>
+                            <td><t t-esc="product.category" /></td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="float: right; width: 20%;">
+                    <t t-if="product.image_medium">
+                        <t t-set="image_medium" t-value="'&lt;img  src=&quot;data:image/gif;base64,'+ product.image_medium +'&quot;  /&gt;'"/>
+                        <t t-raw="image_medium"/>
+                    </t>
+                </div>
+            </div>
+            <div style="clear: both;  padding-top: 10px;">
+                <!--<div style="float: left;">
+                    <div class="input-group" style="width: 200px; margin-right: 50px;">
+                        <span class="input-group-addon js_minus input-sm"><a href="#"><i class="fa fa-minus"></i></a></span>
+                        <form class="js_submit_value">
+                            <input type="text" class="form-control text-center js_qty" t-att-value="1"></input>
+                        </form>
+                        <span class="input-group-addon js_plus input-sm"><a href="#"><i class="fa fa-plus"></i></a></span>
+                    </div>
+                </div>
+                <div style="float: left">
+                    <button type="button" class="btn btn-danger js_confirm_product pull-right">Continue</button>
+                </div>-->
+                <h3>Product Quantity</h3>
+                <div class="input-group" style="width: 200px; margin-right: 50px;">
+                    <span class="input-group-addon js_minus input-sm"><a href="#"><i class="fa fa-minus"></i></a></span>
+                    <form class="js_submit_value">
+                        <input type="text" class="form-control text-center js_qty" t-att-value="1"></input>
+                    </form>
+                    <span class="input-group-addon js_plus input-sm"><a href="#"><i class="fa fa-plus"></i></a></span>
+                </div>
+                <hr/>
+                <button type="button" class="btn btn-danger js_confirm_product pull-right">Continue</button>
+            </div>
+        </t>
+        <t t-if="product == null">
+            <h1>Scan a product</h1>
+            <img src="/stock_barcode_interface/static/src/img/scan.png" alt="Barcode"/>
+        </t>
+         <t t-set="barcodevalue" t-value=""/>
+        <t t-if="product != null">
+            <t t-set="barcodevalue" t-value="product.barcode"/>
+        </t>
+
+        <div id="dialog-form" title="Edit" style="display: none;">
+          <form>
+            <fieldset>
+              <label for="name">EAN13</label>
+              <input type="text" name="barcode" id="barcode" t-att-value="barcodevalue" class="text ui-widget-content ui-corner-all" />
+              <!-- Allow form submission with keyboard without duplicating the dialog button -->
+              <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
+            </fieldset>
+          </form>
+        </div>
+
+
+    </div>
+</t>
+
+
+<t t-name="IncomingProductSelectIncomingsWidget">
+    <div class="container">
+        <button class="progressbar">
+            <a href="#">PRODUCT SCAN</a>
+            <i></i>
+        </button>
+        <button class="progressbar" id="currentprogressbar">
+            <a href="#">INPUT SELECTION</a>
+        </button>
+        <button class="progressbar">
+            <a href="#">OUTPUT SELECTION</a>
+        </button>
+
+        <h1>Product quantity to share: <span id="product_qty"></span></h1>
+        <h3>Product: <t t-esc="product.brand" /> - <t t-esc="product.name" /></h3>
+
+        <t t-if="incomings.length > 0">
+            <table class='table table-striped'>
+                <thead>
+                    <tr>
+                        <th class="text-left">Partner</th>
+                        <th class="text-left">Picking Name</th>
+                        <th class="text-left">Source Document</th>
+                        <th class="text-left">Creation Date</th>
+                        <th class="text-left">Scheduled Date</th>
+                        <th class="text-left">State</th>
+                        <th class="text-left">Ordered Quantity</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody class='js_products_table_todo'>
+                    <t t-foreach="incomings" t-as="picking">
+                        <tr class="oe_product">
+                            <td t-att-class="'brctbl-col1 text-left'">
+                                <t t-esc="picking.partner" />
+                            </td>
+                            <td t-att-class="'brctbl-col1 text-left'">
+                                <t t-esc="picking.name" />
+                            </td>
+                            <td t-att-class="'brctbl-col1 text-left'">
+                                <t t-esc="picking.origin" />
+                            </td>
+                            <td t-att-class="'brctbl-col2 text-left'">
+                                <t t-esc="picking.date" />
+                            </td>
+                            <td t-att-class="'brctbl-col3 text-left'">
+                                <t t-esc="picking.min_date" />
+                            </td>
+                            <td t-att-class="'brctbl-col4 text-left'">
+                                <t t-esc="picking.state" />
+                            </td>
+                            <td t-att-class="'brctbl-col5 text-left'">
+                                <t t-esc="picking.product_qty" />
+                            </td>
+                            <td t-att-class="'brctbl-col6 text-left'">
+                                <div class="input-group" style="width: 200px;">
+                                    <span class="input-group-addon js_minus input-sm"><a href="#"><i class="fa fa-minus"></i></a></span>
+                                    <form class="js_submit_value">
+                                        <input type="text" class="form-control text-center js_qty" t-att-picking-id="picking.id" t-att-value="0"></input>
+                                    </form>
+                                    <span class="input-group-addon js_plus input-sm"><a href="#"><i class="fa fa-plus"></i></a></span>
+                                </div>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+            <hr/>
+
+            <button type="button" class="btn btn-danger js_confirm_incomings pull-right" style="margin-bottom: 15px;">Transfer IN and Continue</button>
+            <div style="clear: both;" class="checkbox pull-right">
+                <label style="font-weight: bold; color: orangered;">
+                    <input type="checkbox" id="create-backorder"><span class="text-uppercase">Is the last product of the current delivery note</span><br/><small>(create a backorder for the other products of the picking list)</small></input>
+                </label>
+            </div>
+
+        </t>
+        <t t-if="incomings.length === 0">
+            <h1 style="color: red; font-weight: bold;">No IN found => the product is already transferred</h1>
+            <hr/>
+            <button type="button" class="btn btn-danger js_go_to_outgoings pull-right">Go to OUT</button>
+        </t>
+    </div>
+</t>
+
+
+<t t-name="IncomingProductSelectOutgoingsWidget">
+    <div class="container">
+        <button class="progressbar">
+            <a href="#">PRODUCT SCAN</a>
+            <i></i>
+        </button>
+        <button class="progressbar" >
+            <a href="#">INPUT SELECTION</a>
+            <i></i>
+        </button>
+        <button class="progressbar" id="currentprogressbar">
+            <a href="#">OUTPUT SELECTION</a>
+        </button>
+
+        <h1>Scanned product quantity to share: <span id="product_qty"></span></h1>
+        <h3>Product: <t t-esc="product.brand" /> - <t t-esc="product.name" /></h3>
+        <hr/>
+        <h2 style="color: blue; font-weight: bold;">Product quantity to reserve for a customer <small>(reservation and printing labels)</small></h2>
+        <t t-if="outgoings.length > 0">
+            <table class='table table-striped customer-moves'>
+                <thead>
+                    <tr>
+                        <th class="text-left">Partner</th>
+                        <th class="text-left">Picking Name</th>
+                        <th class="text-left">Source Document</th>
+                        <th class="text-left">Creation Date</th>
+                        <th class="text-left">Scheduled Date</th>
+                        <th class="text-left">State</th>
+                        <th class="text-left">Ordered Quantity</th>
+                        <th class="text-left">Reserved Quantity</th>
+                        <th class="text-left">Quantity Difference</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody class='js_products_table_todo'>
+                    <t t-foreach="outgoings" t-as="picking">
+                        <tr class="oe_product">
+                            <td t-att-class="'brctbl-col1 text-left'">
+                                <t t-esc="picking.partner" />
+                            </td>
+                            <td t-att-class="'brctbl-col1 text-left'">
+                                <t t-esc="picking.name" />
+                            </td>
+                            <td t-att-class="'brctbl-col1 text-left'">
+                                <t t-esc="picking.origin" />
+                            </td>
+                            <td t-att-class="'brctbl-col2 text-left'">
+                                <t t-esc="picking.date" />
+                            </td>
+                            <td t-att-class="'brctbl-col3 text-left'">
+                                <t t-esc="picking.min_date" />
+                            </td>
+                            <td t-att-class="'brctbl-col4 text-left'">
+                                <t t-esc="picking.state" />
+                            </td>
+                            <td t-att-class="'brctbl-col5 text-left'">
+                                <t t-esc="picking.product_qty" />
+                            </td>
+                            <td t-att-class="'brctbl-col5 text-left'">
+                                <t t-esc="picking.reserved_availability" />
+                            </td>
+                            <td t-att-class="'brctbl-col5 text-left'">
+                                <t t-esc="picking.product_qty_diff" />
+                            </td>
+                            <td t-att-class="'brctbl-col6 text-left'">
+                                <div class="input-group" style="width: 200px;">
+                                    <span class="input-group-addon js_minus input-sm"><a href="#"><i class="fa fa-minus"></i></a></span>
+                                    <form class="js_submit_value">
+                                        <input type="text" class="form-control text-center js_qty" t-att-picking-id="picking.id" t-att-value="0"></input>
+                                    </form>
+                                    <span class="input-group-addon js_plus input-sm"><a href="#"><i class="fa fa-plus"></i></a></span>
+                                </div>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </t>
+        <t t-if="outgoings.length === 0">
+            <h2 style="color: red; font-weight: bold;">No OUT found!</h2>
+        </t>
+        <hr/>
+        <h2 style="color: blue; font-weight: bold;">Product quantity to add to the stock <small>(printing labels, no reservation)</small></h2>
+
+
+
+        <table class='table table-striped stock-moves' style="width: initial;">
+                <tr>
+                    <th class="text-left">Maximum Quantity</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <td t-att-class="'brctbl-col1 text-left'">
+                        <t t-esc="incomings_product_qty_sum" />
+                    </td>
+                    <td t-att-class="'brctbl-col2 text-left'">
+                        <div class="input-group" style="width: 200px; margin-right: 50px;">
+                            <span class="input-group-addon js_minus input-sm"><a href="#"><i class="fa fa-minus"></i></a></span>
+                            <form class="js_submit_value">
+                                <input type="text" class="form-control text-center js_qty" t-att-value="0"></input>
+                            </form>
+                            <span class="input-group-addon js_plus input-sm"><a href="#"><i class="fa fa-plus"></i></a></span>
+                        </div>
+                    </td>
+                </tr>
+        </table>
+
+        <hr/>
+
+        <button type="button" class="btn btn-danger js_confirm_print pull-right">Reserve and/or Print Labels</button>
+
+    </div>
+</t>
+
+<!--
+<t t-name="IncomingProductFinishWidget">
+    <div class="container">
+        <button class="progressbar">
+            <a href="#">PRODUCT SCAN</a>
+            <i></i>
+        </button>
+        <button class="progressbar" >
+            <a href="#">INPUT SELECTION</a>
+            <i></i>
+        </button>
+        <button class="progressbar">
+            <a href="#">OUTPUT SELECTION</a>
+            <i></i>
+        </button>
+
+        <h1>The labels are printing ...</h1>
+        <h3>Product: <t t-esc="product.brand" /> - <t t-esc="product.name" /></h3>
+
+        <button type="button" class="btn btn-danger js_redirect_incoming_product pull-right">New Incoming Product</button>
+    </div>
+</t>
+-->
+
+
+<t t-name="CollectAndGoWidget">
+    <div class="container">
+        <input type='text' id="customer_search_box" class="oe_searchbox form-control" placeholder='Search customer' style="margin-bottom: 300px;"/>
+
+        <button type="button" class="btn btn-danger js_transfer_products_and_print_delivery_note" style="margin-right: 50px;">Transfer products and print delivery note</button>
+        <button type="button" class="btn btn-danger js_print_last_delivery_note" style="margin-right: 50px;">Print last delivery note</button>
+        <button type="button" class="btn btn-danger js_print_order_form" style="margin-right: 50px;">Print order form</button>
+    </div>
+</t>
+
+
+<t t-name="PageWidget">
+    <div>
+         <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header navbar-form navbar-left" style="width: 1170px;">
+                    <input type='text' id="product_search_box" class="oe_searchbox form-control" placeholder='Search'/>
+                    <button type="button" class="btn btn-primary navbar-btn js_clear_search">Clear Search</button>
+                    <button type="button" class="btn btn-primary navbar-btn nav_clicked_btn js_pick_incoming_product">Incoming Product</button>
+                    <button type="button" class="btn btn-primary navbar-btn nav_clicked_btn js_pick_collect_and_go">CollectAndGo</button>
+                    <!-- <button type="button" class="btn btn-primary navbar-btn js_pick_menu">Menu</button> -->
+                    <button type="button" class="btn btn-primary navbar-btn nav_clicked_btn js_pick_incomings">Incomings</button>
+                    <button type="button" class="btn btn-primary navbar-btn nav_clicked_btn js_pick_outgoings">Outgoings</button>
+                    <button type="button" class="btn btn-primary navbar-btn nav_clicked_btn js_pick_products">All Products</button>
+                    <button type="button" class="btn btn-primary navbar-btn nav_clicked_btn js_pick_moves_products">Moves Products</button>
+                    <button type="button" class="btn btn-primary navbar-btn nav_clicked_btn js_pick_customers">Customers</button>
+                    <button type="button" class="btn btn-primary navbar-btn nav_clicked_btn js_pick_suppliers">Suppliers</button>
+                    <button type="button" class="btn btn-danger navbar-btn js_pick_quit">Quit</button>
+                </div>
+                <div class="navbar-header navbar-form navbar-right">
+                <!--<button type="button" class="btn btn-danger js_pick_quit pull-right">Quit</button>-->
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="container">
+                <h1>LOADING...</h1>
+            </div>
+        </div>
+        <div class="footer">
+
+        </div>
+    </div>
+</t>
+
+</templates>
