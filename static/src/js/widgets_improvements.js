@@ -169,7 +169,7 @@ function openerp_picking_widgets(instance){
         },
         quit: function(){
             this.destroy();
-            return new instance.web.Model("ir.model.data").get_func("search_read")([['name', '=', 'action_picking_type_form']], ['res_id']).pipe(function(res) {
+            return new instance.web.Model("ir.model.data").get_func("search_read")([['name', '=', 'stock_picking_type_action']], ['res_id']).pipe(function(res) {
                     window.location = '/web#action=' + res[0]['res_id'];
                 });
         },
@@ -891,7 +891,7 @@ function openerp_picking_widgets(instance){
             },100);
         },
         quit: function(){
-            return new instance.web.Model("ir.model.data").get_func("search_read")([['name', '=', 'action_picking_type_form']], ['res_id']).pipe(function(res) {
+            return new instance.web.Model("ir.model.data").get_func("search_read")([['name', '=', 'stock_picking_type_action']], ['res_id']).pipe(function(res) {
                     window.location = '/web#action=' + res[0]['res_id'];
                 });
         },
@@ -1499,7 +1499,7 @@ function openerp_picking_widgets(instance){
         },
         quit: function(){
             this.destroy();
-            return new instance.web.Model("ir.model.data").get_func("search_read")([['name', '=', 'action_picking_type_form']], ['res_id']).pipe(function(res) {
+            return new instance.web.Model("ir.model.data").get_func("search_read")([['name', '=', 'stock_picking_type_action']], ['res_id']).pipe(function(res) {
                     window.location = '/web#action=' + res[0]['res_id'];
                 });
         },
@@ -1720,7 +1720,7 @@ function openerp_picking_widgets(instance){
             },100);
         },
         quit: function(){
-            return new instance.web.Model("ir.model.data").get_func("search_read")([['name', '=', 'action_picking_type_form']], ['res_id']).pipe(function(res) {
+            return new instance.web.Model("ir.model.data").get_func("search_read")([['name', '=', 'stock_picking_type_action']], ['res_id']).pipe(function(res) {
                     window.location = '/web#action=' + res[0]['res_id'];
                 });
         },
@@ -1883,7 +1883,7 @@ function openerp_picking_widgets(instance){
             },100);
         },
         quit: function(){
-            return new instance.web.Model("ir.model.data").get_func("search_read")([['name', '=', 'action_picking_type_form']], ['res_id']).pipe(function(res) {
+            return new instance.web.Model("ir.model.data").get_func("search_read")([['name', '=', 'stock_picking_type_action']], ['res_id']).pipe(function(res) {
                     window.location = '/web#action=' + res[0]['res_id'];
                 });
         },

@@ -82,7 +82,7 @@
         <menuitem
             id="menu_barcode_interface_url"
             name="Barcode Interface"
-            parent="stock.menu_stock_warehouse_mgmt"
+            parent="stock.menu_stock_inventory_control"
             action="barcode_interface_url_action" />
     </data>
 </openerp>
