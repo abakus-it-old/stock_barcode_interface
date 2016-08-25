@@ -159,7 +159,7 @@ class stock_delivery_labels(models.Model):
                     move_dict = {   'name':move.product_id.name,
                                     'brand':move.product_id.product_brand_id.name,
                                     'full_name':str(move.product_id.product_brand_id.name) + " - " + move.product_id.name,
-                                    'ean13':move.product_id.ean13,
+                                    'ean13':move.product_id.barcode,
                                     'ref':move.product_id.default_code,
                                     'qty': move.product_uom_qty,
                                     'uom':move.product_uom.name,
